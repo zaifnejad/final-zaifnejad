@@ -6,7 +6,8 @@ def Find_Proteins(Item, Dict):
     for AminoAcid in Dict:
         if Item in AminoAcid:
             ReturnAA += Dict[AminoAcid]
-            return ReturnProtein
+            return ReturnAA        
+    return "Stop"
 
 def tRNA_Tranlation(mRNATranscribe):
     tRNATrans = mRNATranscribe.maketrans("AUCG", "UAGC")
@@ -55,10 +56,8 @@ def Translation_Transcription(Sequence, Codon):
 def Determine_Sequence():
     print("Please tell me the type of sequence you the file contains")
     FullSequence = input(
-        "Press 1 for Codon\nPress 2 for Anti-Codon\nPress 3 for mRNA\nPress 4 for tRNA\nPress anything else to exit."
+        "Press 1 for Codon\nPress 2 for Anti-Codon\nPress 3 for mRNA\nPress 4 for tRNA\nPress anything else to exit.\n"
     )
-    if FullSequence != 1 or 2 or 3 or 4:
-        print("Have a nice day.")
     return FullSequence
 
 def Find_Start(SearchSequence):
@@ -76,20 +75,20 @@ def Sanitation(UnsanSequence):
     SanSequence1 = ""
     SanSequence1 = SanSequence1.join(UnsanSequence)
     SanSequence2 = SanSequence1.strip()
-    FinalSanSequence = SanSequence2.replace(" ", "")
+    FinalSanSequence = SanSequence2.replace("\n", "")
     return FinalSanSequence
 
 def Slicing(mRNASlice):
     Slicer = 3
     SlicedSequence = []
-    for Characters in range(0, len(mRNASlice), 3)
+    for Characters in range(0, len(mRNASlice), 3):
         SlicedSequence.append(mRNASlice[Characters: Slicer])
         Slicer += 3
     return SlicedSequence
 
 def Create_New_File(EndAminoAcid, EndtRNA, EndProtein, EndCodon):
-    with open("Sequence.txt", "a") as EndFile:
-        EndFile.append("The protein for the DNA  is:")
+    with open("Sequence.txt", "a+") as EndFile:
+        '''EndFile.append("The protein for the DNA  is:")
         EndFile.append(EndProtein)
         if EndCodon == 1:
             EndFile.append("The Codon Sequence is:")
@@ -120,7 +119,8 @@ def Create_New_File(EndAminoAcid, EndtRNA, EndProtein, EndCodon):
             EndFile.append("The mRNA Sequence is:")
             EndFile.append(EndAminoAcid[3])
         EndFile.append("The tRNA Sequence is:")
-        EndFile.append(EndtRNA)
+        EndFile.append(EndtRNA)'''
+        print(EndProtein,"\n",EndtRNA)
 
 
 def Main():
@@ -178,8 +178,10 @@ def Main():
             continue
         break
     DNAType = Determine_Sequence()
-    if DNAType != 1 or 2 or 3 or 4:
-        quit()
+    DNAType =int(DNAType)
+    #if not DNAType == range(1,5):
+    #    print("Have a nice day.")
+    #    quit()
     MainSequence = Sanitation(MainSequence)
     DNATranslations = Translation_Transcription(MainSequence, DNAType)
     mRNASequence = ""
@@ -193,18 +195,20 @@ def Main():
     SlicedDNAList = Slicing(DNAStart)
     ProteinStrand = []
     for AminoAcids in SlicedDNAList:
-        ProteinStrand.append(Find_Proteins(AminoA, AminoAcidDict))
+        ProteinStrand.append(Find_Proteins(AminoAcids, AminoAcidDict))
         if Find_Proteins(AminoAcids, AminoAcidDict) == "Stop":
             break
     tRNAList = []
-    for tRNAAminos in ProteinStrand:
-        tRNAList.append(tRNA_Tranlation(tRNAAminos))
-    tRNAList.pop(-1)
+    for tRNAAminos in SlicedDNAList:
+        if Find_Proteins(tRNAAminos, AminoAcidDict) != "Stop":
+            tRNAList.append(tRNA_Tranlation(tRNAAminos))
+        else:
+            break
     AminoAcidChain = ""
     for AA in ProteinStrand:
         AminoAcidChain += AA
         AminoAcidChain += " "
     Create_New_File(DNATranslations, tRNAList, AminoAcidChain, DNAType)
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     Main()
