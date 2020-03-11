@@ -6,7 +6,7 @@ def Find_Proteins(Item, Dict):
     for AminoAcid in Dict:
         if Item in AminoAcid:
             ReturnAA += Dict[AminoAcid]
-            return ReturnProtein
+            return ReturnAA
 
 def tRNA_Tranlation(mRNATranscribe):
     tRNATrans = mRNATranscribe.maketrans("AUCG", "UAGC")
@@ -82,7 +82,7 @@ def Sanitation(UnsanSequence):
 def Slicing(mRNASlice):
     Slicer = 3
     SlicedSequence = []
-    for Characters in range(0, len(mRNASlice), 3)
+    for Characters in range(0, len(mRNASlice), 3):
         SlicedSequence.append(mRNASlice[Characters: Slicer])
         Slicer += 3
     return SlicedSequence
@@ -193,7 +193,7 @@ def Main():
     SlicedDNAList = Slicing(DNAStart)
     ProteinStrand = []
     for AminoAcids in SlicedDNAList:
-        ProteinStrand.append(Find_Proteins(AminoA, AminoAcidDict))
+        ProteinStrand.append(Find_Proteins(AminoAcids, AminoAcidDict))
         if Find_Proteins(AminoAcids, AminoAcidDict) == "Stop":
             break
     tRNAList = []
@@ -206,5 +206,5 @@ def Main():
         AminoAcidChain += " "
     Create_New_File(DNATranslations, tRNAList, AminoAcidChain, DNAType)
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     Main()
