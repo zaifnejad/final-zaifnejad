@@ -1,13 +1,21 @@
 import string
 import re
 
+def Nuclo_Slicer(Neucliotide, FilePassIn):
+    Slicer2 = 90
+    for Char in range(0, len(Neucliotide), Slicer2):
+        NeuclioString = Neucliotide[Char: Slicer2]
+        Slicer2 += 90
+        FilePassIn.write(NeuclioString)
+        FilePassIn.write("\n")
+
+
 def Find_Proteins(Item, Dict):
     ReturnAA = ""
     for AminoAcid in Dict:
         if Item in AminoAcid:
             ReturnAA += Dict[AminoAcid]
-            return ReturnAA
-    return "Stop"
+            return ReturnAA        
 
 def tRNA_Tranlation(mRNATranscribe):
     tRNATrans = mRNATranscribe.maketrans("AUCG", "UAGC")
@@ -20,46 +28,34 @@ def Translation_Transcription(Sequence, Codon):
     Sanitize = Sequence.translate(SanitizeTrans)
     ReturnDNA.append(Sanitize)
     
-    if Codon == 1: #Codon translation / transcription
-        TemplateTrans = Sanitize.maketrans("ATCG", "TAGC")
-        Template = Sanitize.translate(TemplateTrans)
-        ReturnDNA.append(Template)
+    if Codon == "1": #Codon translation / transcription
+        AntiTrans = Sanitize.maketrans("ATCG", "TAGC")
+        AntiCodon = Sanitize.translate(AntiTrans)
+        ReturnDNA.append(AntiCodon)
         mRNATrans = Sanitize.maketrans("ATCG", "UAGC")
         mRNA = Sanitize.translate(mRNATrans)
         ReturnDNA.append(mRNA)
-    elif Codon == 2: #Template translation / transcription
+    elif Codon == "2": #Anti-Codon translation / transcription
         CodonTrans = Sanitize.maketrans("ATCG", "TAGC")
         CodonTemp = Sanitize.translate(CodonTrans)
         ReturnDNA.append(CodonTemp)
         mRNATrans = CodonTemp.maketrans("ATCG", "UAGC")
         mRNA = CodonTemp.translate(mRNATrans)
         ReturnDNA.append(mRNA)
-    elif Codon == 3: #mRNA translation / transcription
+    elif Codon == "3": #mRNA translation / transcription
         CodonTrans = Sanitize.maketrans("AUCG", "TAGC")
         CodonTemp = Sanitize.translate(CodonTrans)
         ReturnDNA.append(CodonTemp)
-        TemplateTrans = CodonTemp.maketrans("ATCG", "TAGC")
-        Template = CodonTemp.translate(TemplateTrans)
-        ReturnDNA.append(Template)
-    elif Codon == 4: #tRNA translation / transcription
-        CodonTrans = Sanitize.maketrans("AUCG", "TAGC")
-        CodonTemp = Sanitize.translate(CodonTrans)
-        ReturnDNA.append(CodonTemp)
-        TemplateTrans = CodonTemp.maketrans("ATCG", "TAGC")
-        Template = CodonTemp.translate(TemplateTrans)
-        ReturnDNA.append(Template)
-        mRNATrans = Sanitize.maketrans("AUCG", "UAGC")
-        mRNA = Sanitize.translate(mRNATrans)
-        ReturnDNA.append(mRNA)
+        AntiTrans = CodonTemp.maketrans("ATCG", "TAGC")
+        AntiCodon = CodonTemp.translate(AntiTrans)
+        ReturnDNA.append(AntiCodon)
     return ReturnDNA
 
 def Determine_Sequence():
     print("Please tell me the type of sequence you the file contains")
     FullSequence = input(
-        "Press 1 for Codon\nPress 2 for Anti-Codon\nPress 3 for mRNA\nPress 4 for tRNA\nPress anything else to exit."
+        "Press 1 for Codon\nPress 2 for Anti-Codon\nPress 3 for mRNA\nPress anything else to exit.\n"
     )
-    #if FullSequence != 1 or 2 or 3 or 4:
-    #    print("Have a nice day.")
     return FullSequence
 
 def Find_Start(SearchSequence):
@@ -77,7 +73,7 @@ def Sanitation(UnsanSequence):
     SanSequence1 = ""
     SanSequence1 = SanSequence1.join(UnsanSequence)
     SanSequence2 = SanSequence1.strip()
-    FinalSanSequence = SanSequence2.replace(" ", "")
+    FinalSanSequence = SanSequence2.replace("\n", "")
     return FinalSanSequence
 
 def Slicing(mRNASlice):
@@ -89,86 +85,90 @@ def Slicing(mRNASlice):
     return SlicedSequence
 
 def Create_New_File(EndAminoAcid, EndtRNA, EndProtein, EndCodon):
-    with open("Sequence.txt", "a") as EndFile:
-        # EndFile.append("The protein for the DNA  is:")
-        # EndFile.append(EndProtein)
-        # if EndCodon == 1:
-        #     EndFile.append("The Codon Sequence is:")
-        #     EndFile.append(EndAminoAcid[0])
-        #     EndFile.append("The Template Sequence is:")
-        #     EndFile.append(EndAminoAcid[1])
-        #     EndFile.append("The mRNA Sequence is:")
-        #     EndFile.append(EndAminoAcid[2])
-        # if EndCodon == 2:
-        #     EndFile.append("The Codon Sequence is:")
-        #     EndFile.append(EndAminoAcid[1])
-        #     EndFile.append("The Template Sequence is:")
-        #     EndFile.append(EndAminoAcid[0])
-        #     EndFile.append("The mRNA Sequence is:")
-        #     EndFile.append(EndAminoAcid[2])
-        # if EndCodon == 3:
-        #     EndFile.append("The Codon Sequence is:")
-        #     EndFile.append(EndAminoAcid[1])
-        #     EndFile.append("The Template Sequence is:")
-        #     EndFile.append(EndAminoAcid[2])
-        #     EndFile.append("The mRNA Sequence is:")
-        #     EndFile.append(EndAminoAcid[0])
-        # if EndCodon == 4:
-        #     EndFile.append("The Codon Sequence is:")
-        #     EndFile.append(EndAminoAcid[1])
-        #     EndFile.append("The Template Sequence is:")
-        #     EndFile.append(EndAminoAcid[2])
-        #     EndFile.append("The mRNA Sequence is:")
-        #     EndFile.append(EndAminoAcid[3])
-        # EndFile.append("The tRNA Sequence is:")
-        # EndFile.append(EndtRNA)
-        print(EndProtein, EndtRNA)
+    with open("Sequence.txt", "w") as EndFile:
+        EndFile.write("The protein for the DNA  is:\n")
+        EndFile.write(EndProtein)
+        EndFile.write("\n")
+        EndFile.write("The tRNA Sequence is:\n")
+        EndFile.write(EndtRNA)
+        EndFile.write("\n")
+        if EndCodon == "1":
+            EndFile.write("The Codon Sequence is:\n")
+            CodonSequence = EndAminoAcid[0]
+            Nuclo_Slicer(CodonSequence, EndFile)
+            EndFile.write("The Anti-Codon Sequence is:\n")
+            CodonSequence = EndAminoAcid[1]
+            Nuclo_Slicer(CodonSequence, EndFile)
+            EndFile.write("The mRNA Sequence is:\n")
+            CodonSequence = EndAminoAcid[2]
+            Nuclo_Slicer(CodonSequence, EndFile)
+        if EndCodon == "2":
+            EndFile.write("The Codon Sequence is:\n")
+            CodonSequence = EndAminoAcid[1]
+            Nuclo_Slicer(CodonSequence, EndFile)
+            EndFile.write("The Anti-Codon Sequence is:\n")
+            CodonSequence = EndAminoAcid[0]
+            Nuclo_Slicer(CodonSequence, EndFile)
+            EndFile.write("The mRNA Sequence is:\n")
+            CodonSequence = EndAminoAcid[2]
+            Nuclo_Slicer(CodonSequence, EndFile)
+        if EndCodon == "3":
+            EndFile.write("The Codon Sequence is:\n")
+            CodonSequence = EndAminoAcid[1]
+            Nuclo_Slicer(CodonSequence, EndFile)
+            EndFile.write("The Anti-Codon Sequence is:\n")
+            CodonSequence = EndAminoAcid[2]
+            Nuclo_Slicer(CodonSequence, EndFile)
+            EndFile.write("The mRNA Sequence is:\n")
+            CodonSequence = EndAminoAcid[0]
+            Nuclo_Slicer(CodonSequence, EndFile)
+        
 
 def Main():
-    fMET = "AUG"
-    STOP = ("UAA", "UAG", "UGA")
-    PHE = ("UUU", "UUC")
-    LEU = ("UUA", "UUG", "CUA", "CUU", "CUC", "CUG")
-    SER = ("UCU", "UCA", "UCG", "UCC", "AGU", "AGC")
-    TYR = ("UAC", "UAU")
-    CYS = ("UGU", "UGC")
-    TRP = ("UGG")
-    PRO = ("CCG", "CCA", "CCC", "CCU")
-    HIS = ("CAU", "CAC")
-    GLN = ("CAA", "CAG")
-    ARG = ("CGG", "CGC", "CGA", "CGU", "AGA", "AGG")
-    ILE = ("AUC", "AUA", "AUU")
-    THR = ("ACC", "ACU", "ACA", "ACG")
-    ASN = ("AAC", "AAU")
-    LYS = ("AAA", "AAG")
-    VAL = ("GUU", "GUA", "GUC", "GUG")
-    ALA = ("GCU", "GCA", "GCC", "GCG")
-    ASP = ("GAU", "GAC")
-    GLU = ("GAA", "GAG")
-    GLY = ("GGA", "GGC", "GGU", "GGG")
+    # fMET = ("AUG")
+    # STOP = ("UAA", "UAG", "UGA")
+    # PHE = ("UUU", "UUC")
+    # LEU = ("UUA", "UUG", "CUA", "CUU", "CUC", "CUG")
+    # SER = ("UCU", "UCA", "UCG", "UCC", "AGU", "AGC")
+    # TYR = ("UAC", "UAU")
+    # CYS = ("UGU", "UGC")
+    # TRP = ("UGG")
+    # PRO = ("CCG", "CCA", "CCC", "CCU")
+    # HIS = ("CAU", "CAC")
+    # GLN = ("CAA", "CAG")
+    # ARG = ("CGG", "CGC", "CGA", "CGU", "AGA", "AGG")
+    # ILE = ("AUC", "AUA", "AUU")
+    # THR = ("ACC", "ACU", "ACA", "ACG")
+    # ASN = ("AAC", "AAU")
+    # LYS = ("AAA", "AAG")
+    # VAL = ("GUU", "GUA", "GUC", "GUG")
+    # ALA = ("GCU", "GCA", "GCC", "GCG")
+    # ASP = ("GAU", "GAC")
+    # GLU = ("GAA", "GAG")
+    # GLY = ("GGA", "GGC", "GGU", "GGG")
 
     AminoAcidDict = {
-        fMET: "MET",
-        STOP: "Stop",
-        PHE: "PHE",
-        LEU: "LEU",
-        SER: "SER",
-        TYR: "TYR",
-        CYS: "CYS",
-        TRP: "TRP",
-        PRO: "PRO",
-        HIS: "HIS",
-        GLN: "GLN",
-        ARG: "ARG",
-        ILE: "ILE",
-        THR: "THR",
-        ASN: "ASN",
-        LYS: "LYS",
-        VAL: "VAL",
-        ALA: "ALA",
-        ASP: "ASP",
-        GLU: "GLU",
-        GLY: "GLY"
+        ("AUG"): "MET",
+        ("UAA", "UAG", "UGA"): "Stop",
+        ("UUU", "UUC"): "PHE",
+        ("UUA", "UUG", "CUA", "CUU", "CUC", "CUG"): "LEU",
+        ("UCU", "UCA", "UCG", "UCC", "AGU", "AGC"): "SER",
+        ("UAC", "UAU"): "TYR",
+        ("UGU", "UGC"): "CYS",
+        ("UGG"): "TRP",
+        ("CCG", "CCA", "CCC", "CCU"): "PRO",
+        ("CAU", "CAC"): "HIS",
+        ("CAA", "CAG"): "GLN",
+        ("CGG", "CGC", "CGA", "CGU", "AGA", "AGG"): "ARG",
+        ("AUC", "AUA", "AUU"): "ILE",
+        ("ACC", "ACU", "ACA", "ACG"): "THR",
+        ("AAC", "AAU"): "ASN",
+        ("AAA", "AAG"): "LYS",
+        ("GUU", "GUA", "GUC", "GUG"): "VAL",
+        ("GCU", "GCA", "GCC", "GCG"): "ALA",
+        ("GAU", "GAC"): "ASP",
+        ("GAA", "GAG"): "GLU",
+        ("GGA", "GGC", "GGU", "GGG"): "GLY"
     }
     while True:
         FileOpen = input("Please give me the name the .txt file with the DNA sequence:\n")
@@ -179,8 +179,9 @@ def Main():
             continue
         break
     DNAType = Determine_Sequence()
-    #if DNAType != 1 or 2 or 3 or 4:
-    #    quit()
+    if DNAType not in ["1","2","3","4"]:
+        print("Have a nice day.")
+        quit()
     MainSequence = Sanitation(MainSequence)
     DNATranslations = Translation_Transcription(MainSequence, DNAType)
     mRNASequence = ""
@@ -188,8 +189,6 @@ def Main():
         mRNASequence += DNATranslations[2]
     if DNAType == 3:
         mRNASequence += DNATranslations[0]
-    if DNAType == 4:
-        mRNASequence += DNATranslations[3]
     DNAStart = Find_Start(mRNASequence)
     SlicedDNAList = Slicing(DNAStart)
     ProteinStrand = []
@@ -199,15 +198,13 @@ def Main():
             break
     tRNAList = []
     for tRNAAminos in SlicedDNAList:
-        if Find_Proteins(AminoAcids, AminoAcidDict) != "Stop":
+        if Find_Proteins(tRNAAminos, AminoAcidDict) != "Stop":
             tRNAList.append(tRNA_Tranlation(tRNAAminos))
         else:
             break
-    AminoAcidChain = ""
-    for AA in ProteinStrand:
-        AminoAcidChain += AA
-        AminoAcidChain += " "
-    Create_New_File(DNATranslations, tRNAList, AminoAcidChain, DNAType)
+    AminoAcidChain = " ".join(ProteinStrand)
+    tRNAString = " ".join(tRNAList)
+    Create_New_File(DNATranslations, tRNAString, AminoAcidChain, DNAType)
 
 if __name__ == "__main__":
     Main()
