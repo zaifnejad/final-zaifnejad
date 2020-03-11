@@ -1,5 +1,6 @@
 import string
 import re
+import sys
 
 def Nuclo_Slicer(Neucliotide, FilePassIn):
     Slicer2 = 90
@@ -181,7 +182,7 @@ def Main():
     DNAType = Determine_Sequence()
     if DNAType not in ["1","2","3","4"]:
         print("Have a nice day.")
-        quit()
+        sys.exit()
     MainSequence = Sanitation(MainSequence)
     DNATranslations = Translation_Transcription(MainSequence, DNAType)
     mRNASequence = ""
