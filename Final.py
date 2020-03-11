@@ -1,12 +1,17 @@
 import string
 import re
-def Find_Proteins(String, Dict):
-    ReturnAA = ""
 
+def Find_Proteins(Item, Dict):
+    ReturnAA = ""
     for AminoAcid in Dict:
-        if String in AminoAcid:
+        if Item in AminoAcid:
             ReturnAA += Dict[AminoAcid]
             return ReturnProtein
+
+def tRNA_Tranlation(mRNATranscribe):
+    tRNATrans = mRNATranscribe.maketrans("AUCG", "UAGC")
+    tRNA = mRNATranscribe.translate(tRNATrans)
+    return tRNA
 
 def Translation_Transcription(Sequence, Codon):
     ReturnDNA = []
@@ -21,9 +26,6 @@ def Translation_Transcription(Sequence, Codon):
         mRNATrans = Sanitize.maketrans("ATCG", "UAGC")
         mRNA = Sanitize.translate(mRNATrans)
         ReturnDNA.append(mRNA)
-        tRNATrans = mRNA.maketrans("AUCG", "UAGC")
-        tRNA = mRNA.translate(tRNATrans)
-        ReturnDNA.append(tRNA)
     elif Codon == 2: #Template translation / transcription
         CodonTrans = Sanitize.maketrans("ATCG", "TAGC")
         CodonTemp = Sanitize.translate(CodonTrans)
@@ -31,9 +33,6 @@ def Translation_Transcription(Sequence, Codon):
         mRNATrans = CodonTemp.maketrans("ATCG", "UAGC")
         mRNA = CodonTemp.translate(mRNATrans)
         ReturnDNA.append(mRNA)
-        tRNATrans = mRNA.maketrans("AUCG", "UAGC")
-        tRNA = mRNA.translate(tRNATrans)
-        ReturnDNA.append(tRNA)
     elif Codon == 3: #mRNA translation / transcription
         CodonTrans = Sanitize.maketrans("AUCG", "TAGC")
         CodonTemp = Sanitize.translate(CodonTrans)
@@ -41,9 +40,6 @@ def Translation_Transcription(Sequence, Codon):
         TemplateTrans = CodonTemp.maketrans("ATCG", "TAGC")
         Template = CodonTemp.translate(TemplateTrans)
         ReturnDNA.append(Template)
-        tRNATrans = Sanitize.maketrans("AUCG", "UAGC")
-        tRNA = Sanitize.translate(mRNATrans)
-        ReturnDNA.append(tRNA)
     elif Codon == 4: #tRNA translation / transcription
         CodonTrans = Sanitize.maketrans("AUCG", "TAGC")
         CodonTemp = Sanitize.translate(CodonTrans)
@@ -60,19 +56,16 @@ def Determine_Sequence():
     print("Please tell me the type of sequence you the file contains")
     FullSequence = input(
         "Press 1 for Codon\nPress 2 for Anti-Codon\nPress 3 for mRNA\nPress 4 for tRNA\nPress anything else to exit."
-)
+    )
+    if FullSequence != 1 or 2 or 3 or 4:
+        print("Have a nice day.")
     return FullSequence
 
 def Find_Start(SearchSequence):
-    Slicer = 3
     StartSequence = ""
-    SequenceList = []
     CutSequence = re.findall(r'AUG\w+', SearchSequence)
     StartSequence += CutSequence[0]
-    for Characters in range(0, len(StartSequence), 3):
-        SequenceList.append(StartSequence[Characters: Slicer])
-        Slicer += 3
-    return SequenceList
+    return StartSequence
 
 def Get_Sequence(File):
     with open(File, "r") as SequenceFile:
@@ -86,7 +79,49 @@ def Sanitation(UnsanSequence):
     FinalSanSequence = SanSequence2.replace(" ", "")
     return FinalSanSequence
 
-def Create_New_File(EndAA):
+def Slicing(mRNASlice):
+    Slicer = 3
+    SlicedSequence = []
+    for Characters in range(0, len(mRNASlice), 3)
+        SlicedSequence.append(mRNASlice[Characters: Slicer])
+        Slicer += 3
+    return SlicedSequence
+
+def Create_New_File(EndAminoAcid, EndtRNA, EndProtein, EndCodon):
+    with open("Sequence.txt", "a") as EndFile:
+        EndFile.append("The protein for the DNA  is:")
+        EndFile.append(EndProtein)
+        if EndCodon == 1:
+            EndFile.append("The Codon Sequence is:")
+            EndFile.append(EndAminoAcid[0])
+            EndFile.append("The Template Sequence is:")
+            EndFile.append(EndAminoAcid[1])
+            EndFile.append("The mRNA Sequence is:")
+            EndFile.append(EndAminoAcid[2])
+        if EndCodon == 2:
+            EndFile.append("The Codon Sequence is:")
+            EndFile.append(EndAminoAcid[1])
+            EndFile.append("The Template Sequence is:")
+            EndFile.append(EndAminoAcid[0])
+            EndFile.append("The mRNA Sequence is:")
+            EndFile.append(EndAminoAcid[2])
+        if EndCodon == 3:
+            EndFile.append("The Codon Sequence is:")
+            EndFile.append(EndAminoAcid[1])
+            EndFile.append("The Template Sequence is:")
+            EndFile.append(EndAminoAcid[2])
+            EndFile.append("The mRNA Sequence is:")
+            EndFile.append(EndAminoAcid[0])
+        if EndCodon == 4:
+            EndFile.append("The Codon Sequence is:")
+            EndFile.append(EndAminoAcid[1])
+            EndFile.append("The Template Sequence is:")
+            EndFile.append(EndAminoAcid[2])
+            EndFile.append("The mRNA Sequence is:")
+            EndFile.append(EndAminoAcid[3])
+        EndFile.append("The tRNA Sequence is:")
+        EndFile.append(EndtRNA)
+
 
 def Main():
     fMET = "AUG"
@@ -111,7 +146,7 @@ def Main():
     GLU = ("GAA", "GAG")
     GLY = ("GGA", "GGC", "GGU", "GGG")
 
-    AADict = {
+    AminoAcidDict = {
         fMET: "MET",
         STOP: "Stop",
         PHE: "PHE",
@@ -142,8 +177,34 @@ def Main():
             print("The file name given can not be found.")
             continue
         break
+    DNAType = Determine_Sequence()
+    if DNAType != 1 or 2 or 3 or 4:
+        quit()
     MainSequence = Sanitation(MainSequence)
-
+    DNATranslations = Translation_Transcription(MainSequence, DNAType)
+    mRNASequence = ""
+    if DNAType == 1 or 2:
+        mRNASequence += DNATranslations[2]
+    if DNAType == 3:
+        mRNASequence += DNATranslations[0]
+    if DNAType == 4:
+        mRNASequence += DNATranslations[3]
+    DNAStart = Find_Start(mRNASequence)
+    SlicedDNAList = Slicing(DNAStart)
+    ProteinStrand = []
+    for AminoAcids in SlicedDNAList:
+        ProteinStrand.append(Find_Proteins(AminoA, AminoAcidDict))
+        if Find_Proteins(AminoAcids, AminoAcidDict) == "Stop":
+            break
+    tRNAList = []
+    for tRNAAminos in ProteinStrand:
+        tRNAList.append(tRNA_Tranlation(tRNAAminos))
+    tRNAList.pop(-1)
+    AminoAcidChain = ""
+    for AA in ProteinStrand:
+        AminoAcidChain += AA
+        AminoAcidChain += " "
+    Create_New_File(DNATranslations, tRNAList, AminoAcidChain, DNAType)
 
 if __name__ = "__main__":
     Main()
